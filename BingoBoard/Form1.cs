@@ -33,11 +33,21 @@ namespace BingoBoard
         bool random = false;
         Random rndNum = new Random();
         bool [] selected = new bool [75];
-
+		bool autoSelect = false;
         public Form1()
 		{
 			InitializeComponent();
-			cellState = new bool[5, 15];
+			String AtSe = System.Configuration.ConfigurationSettings.AppSettings["autoSelect"];
+			if (String.IsNullOrEmpty(AtSe))
+				AtSe = "false";
+            autoSelect = AtSe.ToLower() == "true";
+			
+			if (autoSelect)
+			{
+				start.Visible = true;
+				stop.Visible = true;
+            }
+            cellState = new bool[5, 15];
 			nextBallTimer = new Timer();
 			nextBallTimer.Tick += new EventHandler(TimerEventProcessor);
 			nextBallTimer.Interval = 1000;
@@ -68,8 +78,10 @@ namespace BingoBoard
 			dataGridView1.DefaultCellStyle.ForeColor = Color.White;
 			dataGridView1.DefaultCellStyle.Font = new Font("Ariel", 18);
 			dataGridView1.Columns[0].Width = cellWidth;
+            
 
-			for (int i = 0; i < rowTitles.Length; i++)
+
+            for (int i = 0; i < rowTitles.Length; i++)
 			{
 				DataGridViewRow tempRow = new DataGridViewRow();
 				DataGridViewCell cell0 = new DataGridViewTextBoxCell();
@@ -106,11 +118,14 @@ namespace BingoBoard
 			label3.Top = CurrentGame.Top + 46;
 			prize.Top = label3.Top;
 			gameTitle.Top = CurrentGame.Top;
-			clearBoard.Top = height - 72;
 			next.Top = prize.Top + 74;
 			previous.Top = prize.Top + 74;
-			quit.Top = height - 72;
-			Picture.Top = numBallsLabel.Top;
+            start.Top = prize.Top + 74;
+			int br_top = (int)((float)height * .91);
+			clearBoard.Top = br_top;// height - 72;
+            quit.Top = br_top;// height - 72;
+            stop.Top = br_top;// height - 72;
+            Picture.Top = numBallsLabel.Top;
 			Picture.Left = (dataGridView1.Right - dataGridView1.Left) / 2 + 50;
             remainingTime = timeout;
             timer.Text = remainingTime.ToString();
